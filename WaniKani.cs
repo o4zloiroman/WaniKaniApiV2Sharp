@@ -305,7 +305,7 @@ namespace WanikaniApi
         /// <summary>
         /// Creates reviews from a list.
         /// </summary>
-        public static void CreateAReview(List<Models.Post.Review> reviews)
+        public static void CreateReviews(List<Models.Post.Review> reviews)
         {
             foreach (var reviewItem in reviews)
             {
@@ -323,6 +323,47 @@ namespace WanikaniApi
 
                 Post("reviews", data);
             }           
+        }
+
+        /// <summary>
+        /// Creates a review for a specific subject_id. Using the related assignment_id is also a valid alternative to using subject_id. 
+        /// Either of those have to bet set, but not both.
+        /// </summary>
+        public static void CreateAReview(int? subject_id, int? assignment_id, int incorrect_meaning_answers, int incorrect_reading_answers)
+        {
+            Models.Post.CreateAReviewRoot review;
+            if (subject_id != null)
+            {
+                review = new Models.Post.CreateAReviewRoot
+                {
+                    Review = new Models.Post.Review
+                    {
+                        SubjectId = subject_id,
+                        IncorrectMeaningAnswers = incorrect_meaning_answers,
+                        IncorrectReadingAnswers = incorrect_reading_answers
+                    }
+                };
+            }
+            else if(assignment_id != null)
+            {
+                review = new Models.Post.CreateAReviewRoot
+                {
+                    Review = new Models.Post.Review
+                    {
+                        AssignmentId = assignment_id,
+                        IncorrectMeaningAnswers = incorrect_meaning_answers,
+                        IncorrectReadingAnswers = incorrect_reading_answers
+                    }
+                };
+            }
+            else
+            {
+                throw new Exception("Either assignment_id or subject_id have to be set, but not both.");
+            }
+
+            string data = JsonConvert.SerializeObject(review);
+
+            Post("reviews", data);
         }
 
         /// <summary>
@@ -424,7 +465,7 @@ namespace WanikaniApi
                 return AssignmentsIntoSubjects(assignments);
             }
             else
-                throw new Exception("No subjects are in review state.");
+                throw new Exception("No subjects are in the review state.");
         }
 
         /// <summary>
