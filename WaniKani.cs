@@ -16,6 +16,7 @@ namespace WanikaniApi
             return _apiTokenRegex.IsMatch(apiKey);
         }
         private static string apiToken;
+
         public static string ApiToken
         {
             get
@@ -44,7 +45,7 @@ namespace WanikaniApi
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
                 var response = httpClient.GetAsync(apiEndpointPath).Result;
                 var json = response.Content.ReadAsStringAsync().Result;
                 response.EnsureSuccessStatusCode();
@@ -62,7 +63,7 @@ namespace WanikaniApi
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
                 StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
                 var response = httpClient.PostAsync(apiEndpointPath, content).Result;
                 response.EnsureSuccessStatusCode();
@@ -79,99 +80,11 @@ namespace WanikaniApi
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
                 StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
                 var response = httpClient.PutAsync(apiEndpointPath, content).Result;
                 response.EnsureSuccessStatusCode();
             }
-        }
-
-        /// <summary>
-        /// Compares the string against the list of strings with allowed answers.
-        /// </summary>        
-        public static bool AnswerChecker(string answer, List<string> compareList)
-        {
-            answer = StringFormat(answer);
-            var tollerance = DistanceTollerance(answer);
-
-            foreach (var compare in compareList)
-            {
-                var distance = LevenshteinDistance.Compute(answer, compare.ToLower());
-                if (tollerance >= distance)
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Removes redundant characters from the given string. Used for comparison. 
-        /// </summary>    
-        public static string StringFormat(string input)
-        {
-            return input.ToLower().Replace("-", " ").Replace(".", "").Replace(",", "").Replace("'", "").Replace("/", "").Replace(":", "");
-        }
-
-        /// <summary>
-        /// Checks the string for the ammount of allowed mistakes. 
-        /// </summary>    
-        public static double DistanceTollerance(string input)
-        {
-            switch (input.Length)
-            {
-                case 1:
-                case 2:
-                case 3:
-                    return 0;
-                case 4:
-                case 5:
-                    return 1;
-                case 6:
-                case 7:
-                    return 2;
-                default:
-                    return 2 + 1 * Math.Floor((Double)(input.Length / 7));
-            }
-        }
-
-        /// <summary>
-        /// Bakes subjects into the library specific items to use in the reviewing process.
-        /// </summary> 
-        public static List<WaniKaniItem> BakeItems(List<ResourceResponse<Subject>> subjects)
-        {
-            var reviewsInProgress = new List<WaniKaniItem>();
-
-            foreach (var subject in subjects)
-            {
-                var meaningsObjects = subject.Data.Meanings;
-                var meanings = new List<string>();
-
-                foreach (var meaning in meaningsObjects)
-                {
-                    meanings.Add(meaning.Meaning);
-                }
-
-                var readingObjects = subject.Data.Readings;
-                var readings = new List<string>();
-
-                if (subject.Object != "radical")
-                {
-                    foreach (var reading in readingObjects)
-                    {
-                        readings.Add(reading.Reading);
-                    }
-                }
-
-                var review = new WaniKaniItem
-                {
-                    Object = subject.Object,
-                    SubjectId = subject.Id,
-                    Characters = subject.Data.Characters,
-                    Meanings = meanings,
-                    Readings = readings
-                };
-                reviewsInProgress.Add(review);
-            }
-            return reviewsInProgress;
         }
 
         /// <summary>

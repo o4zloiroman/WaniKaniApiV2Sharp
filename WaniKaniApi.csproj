@@ -58,7 +58,6 @@
     <Compile Include="Models\ContextSentences.cs" />
     <Compile Include="Models\SubjectBase.cs" />
     <Compile Include="Models\Vocabulary.cs" />
-    <Compile Include="LevenshteinDistance.cs" />
     <Compile Include="WaniKani.cs" />
     <Compile Include="Models\Post\CreateAStudyRoot.cs" />
     <Compile Include="Models\Post\CreateAReviewRoot.cs" />
@@ -85,7 +84,6 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\Preferences.cs" />
-    <Compile Include="WaniKaniItem.cs" />
     <Compile Include="Models\Post\Review.cs" />
   </ItemGroup>
   <ItemGroup>
