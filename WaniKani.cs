@@ -10,6 +10,11 @@ namespace WanikaniApi
 {
     public class WaniKani
     {
+        private static readonly Regex _apiTokenRegex = new Regex("^[a-f0-9-]{36}$");
+        private static bool CheckApiToken(string apiKey)
+        {
+            return _apiTokenRegex.IsMatch(apiKey);
+        }
         private static string apiToken;
         public static string ApiToken
         {
@@ -26,6 +31,58 @@ namespace WanikaniApi
                         throw new ArgumentException("Invalid API token");
                     apiToken = value;
                 }
+            }
+        }
+
+        /// <summary>
+        /// A basic get method for custom requests.
+        /// </summary>
+        /// <param name="apiEndpointPath">https://api.wanikani.com/v2[apiEndpointPath]. Can include query parameters.</param>
+        /// <returns></returns>
+        public static string Get(string apiEndpointPath)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
+                var response = httpClient.GetAsync(apiEndpointPath).Result;
+                var json = response.Content.ReadAsStringAsync().Result;
+                response.EnsureSuccessStatusCode();
+                return json;
+            }
+        }
+
+        /// <summary>
+        /// A basic post method for custom requests.
+        /// </summary>
+        /// <param name="apiEndpointPath">https://api.wanikani.com/v2[apiEndpointPath]. Can include query parameters.</param>
+        /// <param name="data">Serialized json string.</param>
+        public static void Post(string apiEndpointPath, string data)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
+                StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
+                var response = httpClient.PostAsync(apiEndpointPath, content).Result;
+                response.EnsureSuccessStatusCode();
+            }
+        }
+
+        /// <summary>
+        /// A basic put method for custom requests.
+        /// </summary>
+        /// <param name="apiEndpointPath">https://api.wanikani.com/v2[apiEndpointPath]. Can include query parameters.</param>
+        /// <param name="data">Serialized json string.</param>
+        public static void Put(string apiEndpointPath, string data)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
+                StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
+                var response = httpClient.PutAsync(apiEndpointPath, content).Result;
+                response.EnsureSuccessStatusCode();
             }
         }
 
@@ -77,7 +134,7 @@ namespace WanikaniApi
         }
 
         /// <summary>
-        /// Bakes subjects into library specific items for review uses.
+        /// Bakes subjects into the library specific items to use in the reviewing process.
         /// </summary> 
         public static List<WaniKaniItem> BakeItems(List<ResourceResponse<Subject>> subjects)
         {
@@ -115,23 +172,6 @@ namespace WanikaniApi
                 reviewsInProgress.Add(review);
             }
             return reviewsInProgress;
-        }
-
-        /// <summary>
-        /// The basic put method for custom requests.
-        /// </summary>
-        /// <param name="apiEndpointPath"></param>
-        /// <param name="data">Serialized json string.</param>
-        public static void Put(string apiEndpointPath, string data)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
-                StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
-                var response = httpClient.PutAsync(apiEndpointPath, content).Result;
-                response.EnsureSuccessStatusCode();
-            }
         }
 
         /// <summary>
@@ -195,18 +235,6 @@ namespace WanikaniApi
             string data = JsonConvert.SerializeObject(createAStudyMaterial);
 
             Put("study_materials", data);
-        }
-
-        public static void Post(string apiEndpointPath, string data)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
-                StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
-                var response = httpClient.PostAsync(apiEndpointPath, content).Result;
-                response.EnsureSuccessStatusCode();
-            }
         }
 
         /// <summary>
@@ -303,29 +331,6 @@ namespace WanikaniApi
         }
 
         /// <summary>
-        /// Creates reviews from a list.
-        /// </summary>
-        public static void CreateReviews(List<Models.Post.Review> reviews)
-        {
-            foreach (var reviewItem in reviews)
-            {
-                var createAReview = new Models.Post.CreateAReviewRoot
-                {
-                    Review = new Models.Post.Review
-                    {
-                        SubjectId = reviewItem.SubjectId,
-                        IncorrectMeaningAnswers = reviewItem.IncorrectMeaningAnswers,
-                        IncorrectReadingAnswers = reviewItem.IncorrectReadingAnswers
-                    }
-                };
-
-                string data = JsonConvert.SerializeObject(createAReview);
-
-                Post("reviews", data);
-            }           
-        }
-
-        /// <summary>
         /// Creates a review for a specific subject_id. Using the related assignment_id is also a valid alternative to using subject_id. 
         /// Either of those have to bet set, but not both.
         /// </summary>
@@ -385,19 +390,6 @@ namespace WanikaniApi
             string data = JsonConvert.SerializeObject(createAStudyMaterial);
 
             Post("study_materials", data);
-        }
-
-        public static string Get(string apiEndpointPath)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + ApiToken);
-                var response = httpClient.GetAsync(apiEndpointPath).Result;
-                var json = response.Content.ReadAsStringAsync().Result;
-                response.EnsureSuccessStatusCode();
-                return json;
-            }
         }
 
         /// <summary>
@@ -483,12 +475,6 @@ namespace WanikaniApi
             var json = Get("subjects?ids=" + String.Join(",", ids));
             var subjects = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Subject>>>(json).Data;
             return subjects;
-        }
-
-        private static readonly Regex _apiTokenRegex = new Regex("^[a-f0-9-]{36}$");
-        private static bool CheckApiToken(string apiKey)
-        {
-            return _apiTokenRegex.IsMatch(apiKey);
         }
     }
 }
