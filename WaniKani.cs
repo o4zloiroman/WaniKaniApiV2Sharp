@@ -244,6 +244,35 @@ namespace WanikaniApi
         }
 
         /// <summary>
+        /// Returns a collection of all study material, ordered by ascending created_at, 500 at a time.
+        /// </summary>        
+        public static List<ResourceResponse<StudyMaterial>> GetAllStudyMaterials([Optional] bool? hidden, [Optional] int[] ids, [Optional] int[] subject_ids, 
+            [Optional] string[] subject_types, [Optional] DateTime? updated_after)
+        {
+            string query = "?";
+            string and = "&";
+
+            if (hidden != null)
+                query += "hidden=" + hidden + and;
+
+            if (ids != null)
+                query += "ids=" + string.Join(",", ids) + and;
+
+            if (subject_ids != null)
+                query += "subject_ids=" + string.Join(",", subject_ids) + and;
+
+            if (subject_types != null)
+                query += "subject_types=" + string.Join(",", subject_types) + and;
+
+            if (updated_after != null)
+                query += "updated_after=" + updated_after.ToString();
+
+            var json = Get("study_materials" + query.ToLower());
+            var studyMaterials = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<StudyMaterial>>>(json).Data;
+            return studyMaterials;
+        }
+
+        /// <summary>
         /// Creates a review for a specific subject_id. Using the related assignment_id is also a valid alternative to using subject_id. 
         /// Either of those have to bet set, but not both.
         /// </summary>
@@ -306,6 +335,36 @@ namespace WanikaniApi
         }
 
         /// <summary>
+        /// Retrieves a specific subject by its id.
+        /// </summary>        
+        public static Subject GetASpecificSubject(int id)
+        {
+            var json = Get($"subjects/{id}");
+            var subject = JsonConvert.DeserializeObject<ResourceResponse<Subject>>(json).Data;
+            return subject;
+        }
+
+        /// <summary>
+        /// Retrieves a specific assignment by its id.
+        /// </summary>        
+        public static Assignments GetASpecificAssignment(int id)
+        {
+            var json = Get($"assignments/{id}");
+            var assignment = JsonConvert.DeserializeObject<ResourceResponse<Assignments>>(json).Data;
+            return assignment;
+        }
+
+        /// <summary>
+        /// Retrieves a specific study material by its id (not subject_id or assignment_id).
+        /// </summary>
+        public static StudyMaterial GetASpecificStudyMaterial(int id)
+        {
+            var json = Get($"study_materials/{id}");
+            var studyMaterial = JsonConvert.DeserializeObject<ResourceResponse<StudyMaterial>>(json).Data;
+            return studyMaterial;
+        }
+
+        /// <summary>
         /// Retrieves a summary report.
         /// </summary>        
         public static Summary GetSummary()
@@ -323,6 +382,23 @@ namespace WanikaniApi
             var json = Get("user");
             var user = JsonConvert.DeserializeObject<BaseResponse<User>>(json).Data;
             return user;
+        }
+
+        /// <summary>
+        /// Retrieves a specific study material related to a specific subject.
+        /// </summary>        
+        public static StudyMaterial GetAStudyMaterial(int subject_id)
+        {
+            var json = Get($"study_materials/?subject_ids={subject_id}");
+            try
+            {
+                var studyMaterial = JsonConvert.DeserializeObject<ResourceResponse<StudyMaterial>>(json).Data;
+                return studyMaterial;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>
