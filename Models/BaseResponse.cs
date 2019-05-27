@@ -12,7 +12,7 @@ namespace WanikaniApi.Models
         public string Url { get; set; }
 
         [JsonProperty("data_updated_at")]
-        public DateTime DataUpdatedAt { get; set; }
+        public DateTime? DataUpdatedAt { get; set; }
 
         [JsonProperty("data")]
         public T Data { get; set; }

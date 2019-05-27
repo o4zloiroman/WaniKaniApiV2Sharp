@@ -6,7 +6,7 @@ namespace WanikaniApi.Models
     public class StudyMaterial
     {
         [JsonProperty("created_at")]
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         [JsonProperty("subject_id")]
         public int SubjectId { get; set; }

@@ -256,7 +256,7 @@ namespace WanikaniApi
                 query += "hidden=" + hidden + and;
 
             if (ids != null)
-                query += "ids=" + string.Join(",", ids) + and;
+                query += "subject_ids=" + string.Join(",", ids) + and;
 
             if (subject_ids != null)
                 query += "subject_ids=" + string.Join(",", subject_ids) + and;
