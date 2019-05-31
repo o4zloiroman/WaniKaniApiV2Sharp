@@ -414,7 +414,7 @@ namespace WanikaniApi
                 return AssignmentsIntoSubjects(assignments);
             }
             else
-                throw new Exception("No reviews available.");
+                return null;
         }
 
         /// <summary>
@@ -430,7 +430,7 @@ namespace WanikaniApi
                 return AssignmentsIntoSubjects(assignments);
             }
             else
-                throw new Exception("No lessons available.");
+                return null;
         }
 
         /// <summary>

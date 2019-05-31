@@ -60,7 +60,7 @@ namespace WanikaniApi.Models
         [JsonProperty("pronunciation_audios")]
         public PronunciationAudios[] PronunciationAudios { get; set; }
 
-        //[JsonProperty("character_images")]
-        //public List<CharacterImages> CharacterImages { get; set; }
+        [JsonProperty("character_images")]
+        public List<CharacterImages> CharacterImages { get; set; }
     }
 }
