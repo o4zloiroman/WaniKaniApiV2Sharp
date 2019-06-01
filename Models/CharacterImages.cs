@@ -12,6 +12,6 @@ namespace WanikaniApi.Models
         public string ContentType { get; set; }
 
         [JsonProperty("metadata")]
-        public string[] Metadata { get; set; }
+        public object Metadata { get; set; }
     }
 }
