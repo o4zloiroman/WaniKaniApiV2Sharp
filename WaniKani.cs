@@ -95,7 +95,7 @@ namespace WanikaniApi
         {
             var startAssignment = new Models.Put.StartAnAssignmentRoot
             {
-                StartedAt = DateTimeOffset.UtcNow
+                StartedAt = DateTime.UtcNow
             };
 
             string data = JsonConvert.SerializeObject(startAssignment);
@@ -226,7 +226,7 @@ namespace WanikaniApi
         /// <param name="ids">Only level progressions where data.id matches one of the array values are returned.</param>
         /// <param name="updated_after">Only level_progressions updated after this time are returned.</param>
         /// <returns></returns>
-        public static List<ResourceResponse<LevelProgression>> GetAllLevelProgressions([Optional] int[] ids, [Optional] DateTimeOffset updated_after)
+        public static List<ResourceResponse<LevelProgression>> GetAllLevelProgressions([Optional] int[] ids, [Optional] DateTime updated_after)
         {
             string idsP = "";
             string updated_afterP = "";
@@ -270,6 +270,38 @@ namespace WanikaniApi
             var json = Get("study_materials" + query.ToLower());
             var studyMaterials = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<StudyMaterial>>>(json).Data;
             return studyMaterials;
+        }
+
+        /// <summary>
+        /// Returns a collection of all subjects, ordered by ascending created_at, 1000 at a time.
+        /// </summary>        
+        public static List<ResourceResponse<Subject>> GetAllSubjects([Optional] int[] ids, [Optional] string[] types, [Optional] string[] slugs, [Optional] int[] levels,
+            [Optional] bool? hidden, [Optional] DateTime? updated_after)
+        {
+            string query = "?";
+            string and = "&";
+
+            if (hidden != null)
+                query += "hidden=" + hidden + and;
+
+            if (ids != null)
+                query += "ids=" + string.Join(",", ids) + and;
+
+            if (types != null)
+                query += "types=" + string.Join(",", types) + and;
+
+            if (slugs != null)
+                query += "slugs=" + string.Join(",", slugs) + and;
+
+            if (levels != null)
+                query += "levels=" + string.Join(",", levels) + and;
+
+            if (updated_after != null)
+                query += "updated_after=" + updated_after.ToString();
+
+            var json = Get("subjects" + query.ToLower());
+            var subjects = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Subject>>>(json).Data;
+            return subjects;
         }
 
         /// <summary>
