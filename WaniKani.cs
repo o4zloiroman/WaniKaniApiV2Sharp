@@ -10,27 +10,26 @@ namespace WanikaniApi
 {
     public class WaniKani
     {
-        private static readonly Regex _apiTokenRegex = new Regex("^[a-f0-9-]{36}$");
+        private static string _apiToken;
+        private static readonly Regex ApiTokenRegex = new Regex("^[a-f0-9-]{36}$");
         private static bool CheckApiToken(string apiKey)
         {
-            return _apiTokenRegex.IsMatch(apiKey);
+            return ApiTokenRegex.IsMatch(apiKey);
         }
-        private static string apiToken;
-
         public static string ApiToken
         {
             get
             {
-                return apiToken;
+                return _apiToken;
             }
 
             set
             {
-                if (apiToken != value)
+                if (_apiToken != value)
                 {
                     if (!CheckApiToken(value))
                         throw new ArgumentException("Invalid API token");
-                    apiToken = value;
+                    _apiToken = value;
                 }
             }
         }
@@ -45,7 +44,7 @@ namespace WanikaniApi
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _apiToken);
                 var response = httpClient.GetAsync(apiEndpointPath).Result;
                 var json = response.Content.ReadAsStringAsync().Result;
                 response.EnsureSuccessStatusCode();
@@ -63,7 +62,7 @@ namespace WanikaniApi
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _apiToken);
                 StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
                 var response = httpClient.PostAsync(apiEndpointPath, content).Result;
                 response.EnsureSuccessStatusCode();
@@ -80,7 +79,7 @@ namespace WanikaniApi
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _apiToken);
                 StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
                 var response = httpClient.PutAsync(apiEndpointPath, content).Result;
                 response.EnsureSuccessStatusCode();
@@ -236,7 +235,7 @@ namespace WanikaniApi
                 idsP = "ids=" + string.Join(",", ids);
             
             if (updated_after != n)
-                updated_afterP = "updated_after=" + updated_after.ToString();
+                updated_afterP = "updated_after=" + updated_after;
 
             var json = Get($"level_progressions?{updated_afterP}&{idsP}");
             var levelProgression = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<LevelProgression>>>(json).Data;
