@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -8,6 +9,8 @@ using WanikaniApi.Models;
 
 namespace WanikaniApi
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class WaniKani
     {
         private static string _apiToken;
@@ -18,10 +21,7 @@ namespace WanikaniApi
         }
         public static string ApiToken
         {
-            get
-            {
-                return _apiToken;
-            }
+            get => _apiToken;
 
             set
             {
@@ -112,7 +112,7 @@ namespace WanikaniApi
             {
                 User = new Models.Put.User
                 {
-                    Preferences = new Models.Preferences
+                    Preferences = new Preferences
                     {
                         LessonsBatchSize = LessonsBatchSize,
                         LessonsAutoplayAudio = LessonsAutoplayAudio,
@@ -278,7 +278,7 @@ namespace WanikaniApi
             [Optional] bool? hidden, [Optional] DateTime? updated_after)
         {
             string query = "?";
-            string and = "&";
+            const string and = "&";
 
             if (hidden != null)
                 query += "hidden=" + hidden + and;
@@ -296,7 +296,7 @@ namespace WanikaniApi
                 query += "levels=" + string.Join(",", levels) + and;
 
             if (updated_after != null)
-                query += "updated_after=" + updated_after.ToString();
+                query += "updated_after=" + updated_after;
 
             var json = Get("subjects" + query.ToLower());
             var subjects = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Subject>>>(json).Data;
@@ -438,14 +438,12 @@ namespace WanikaniApi
         public static List<ResourceResponse<Subject>> GetSubjectsAvailableForReview()
         {
             var summary = GetSummary();
-            if (summary.Reviews[0].SubjectIds.Length != 0)
-            {
-                var json = Get("assignments?immediately_available_for_review");
-                var assignments = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignments>>>(json).Data;
-                return AssignmentsIntoSubjects(assignments);
-            }
-            else
-                return null;
+            if (summary.Reviews[0].SubjectIds.Length == 0) return null;
+
+            var json = Get("assignments?immediately_available_for_review");
+            var assignments = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignments>>>(json).Data;
+            return AssignmentsIntoSubjects(assignments);
+
         }
 
         /// <summary>
