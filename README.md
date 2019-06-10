@@ -12,9 +12,5 @@ Consult with the [official documentaion](https://docs.api.wanikani.com/20170710/
 
 Reference the [NuGet Package](https://www.nuget.org/packages/WanikaniApiV2/) or the DLL.
 
-## TODO
-
-- Caching.
-
 ## License
 The library is available under the MIT License.
