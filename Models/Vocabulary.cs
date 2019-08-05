@@ -3,13 +3,13 @@ using System;
 
 namespace WanikaniApi.Models
 {
-    public class Vocabulary : SubjectBase
+    public class Vocabulary : BaseSubject, IReadable
     {
-        [JsonProperty("component_subject_ids")]
-        public int[] ComponentSubjectIds { get; set; }
-
         [JsonProperty("readings")]
-        public Readings Readings { get; set; }
+        public Readings[] Readings { get; set; }
+
+        [JsonProperty("component_subject_ids")]
+        public int[] ComponentSubjectIds { get; set; }        
 
         [JsonProperty("parts_of_speech")]
         public string[] PartsOfSpeech { get; set; }

@@ -3,12 +3,12 @@ using System;
 
 namespace WanikaniApi.Models
 {
-    class Radical : SubjectBase
+    public class Radical : BaseSubject
     {
         [JsonProperty("amalgamation_subject_ids")]
         public int[] AmalgamationSubjectIds { get; set; }
 
         [JsonProperty("character_images")]
-        public CharacterImages CharacterImages { get; set; }
+        public CharacterImages[] CharacterImages { get; set; }
     }
 }

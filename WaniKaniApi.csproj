@@ -35,6 +35,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JsonSubTypes, Version=1.6.0.0, Culture=neutral, PublicKeyToken=ee75fc290dbc1176, processorArchitecture=MSIL">
+      <HintPath>..\dotCrab\packages\JsonSubTypes.1.6.0\lib\net46\JsonSubTypes.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -49,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\IReadable.cs" />
+    <Compile Include="Models\ISubject.cs" />
     <Compile Include="Models\Metadata.cs" />
     <Compile Include="Models\PronunciationAudios.cs" />
     <Compile Include="Models\Kanji.cs" />
@@ -56,7 +61,7 @@
     <Compile Include="Models\Radical.cs" />
     <Compile Include="Models\AuxiliaryMeanings.cs" />
     <Compile Include="Models\ContextSentences.cs" />
-    <Compile Include="Models\SubjectBase.cs" />
+    <Compile Include="Models\BaseSubject.cs" />
     <Compile Include="Models\Vocabulary.cs" />
     <Compile Include="WaniKani.cs" />
     <Compile Include="Models\Post\CreateAStudyRoot.cs" />

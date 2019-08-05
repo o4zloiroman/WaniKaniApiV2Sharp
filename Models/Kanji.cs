@@ -3,7 +3,7 @@ using System;
 
 namespace WanikaniApi.Models
 {
-    class Kanji : SubjectBase
+    class Kanji : BaseSubject, IReadable
     {
         [JsonProperty("readings")]
         public Readings[] Readings { get; set; }
@@ -16,5 +16,8 @@ namespace WanikaniApi.Models
 
         [JsonProperty("visually_similar_subject_ids")]
         public object[] VisuallySimilarSubjectIds { get; set; }
+
+        [JsonProperty("reading_mnemonic")]
+        public string ReadingMnemonic { get; set; }
     }
 }

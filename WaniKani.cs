@@ -152,21 +152,6 @@ namespace WanikaniApi
         /// <summary>
         /// Returns a collection of all assignments, ordered by ascending created_at, 500 at a time.
         /// </summary>
-        /// <param name="available_after">Only assignments available at or after this time are returned.</param>
-        /// <param name="available_before">Only assignments available at or before this time are returned.</param>
-        /// <param name="burned">When set to true, returns assignments that have a value in data.burned_at. Returns assignments with a null data.burned_at if false.</param>
-        /// <param name="hidden">Return assignments with a matching value in the hidden attribute</param>
-        /// <param name="ids">Only assignments where data.id matches one of the array values are returned.</param>
-        /// <param name="levels">Only assignments where the associated subject level matches one of the array values are returned. Valid values range from 1 to 60.</param>
-        /// <param name="passed">Returns assignments where data.passed equals passed.</param>
-        /// <param name="resurrected">Returns assignments where data.resurrected equals resurrected.</param>
-        /// <param name="srs_stages">Only assignments where data.srs_stage matches one of the array values are returned. Valid values range from 0 to 9</param>
-        /// <param name="started">When set to true, returns assignments that have a value in data.started_at. Returns assignments with a null data.started_at if false.</param>
-        /// <param name="subject_ids">Only assignments where data.subject_id matches one of the array values are returned.</param>
-        /// <param name="subject_types">Only assignments where data.subject_type matches one of the array values are returned. Valid values are: radical, kanji, or vocabulary.</param>
-        /// <param name="unlocked">When set to true, returns assignments that have a value in data.unlocked_at. Returns assignments with a null data.unlocked_at if false.</param>
-        /// <param name="updated_after">Only assignments updated after this time are returned.</param>
-        /// <returns></returns>
         public static List<ResourceResponse<Assignments>> GetAllAssignments
             ([Optional] DateTime? available_after, [Optional] DateTime? available_before, [Optional] bool? burned, [Optional] bool? hidden, [Optional] int[] ids,
             [Optional] int[] levels, [Optional] bool? passed, [Optional] bool? resurrected, [Optional] int[] srs_stages, [Optional] bool? started, [Optional] int[] subject_ids,

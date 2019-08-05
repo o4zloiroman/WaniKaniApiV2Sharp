@@ -3,7 +3,7 @@ using System;
 
 namespace WanikaniApi.Models
 {
-    public class SubjectBase
+    public abstract class BaseSubject : ISubject
     {
         [JsonProperty("auxiliary_meanings")]
         public AuxiliaryMeanings[] AuxiliaryMeanings { get; set; }
@@ -25,12 +25,12 @@ namespace WanikaniApi.Models
 
         [JsonProperty("level")]
         public int Level { get; set; }
+        
+        [JsonProperty("meanings")]
+        public Meanings[] Meanings { get; set; }
 
         [JsonProperty("meaning_mnemonic")]
         public string MeaningMnemonic { get; set; }
-
-        [JsonProperty("meanings")]
-        public Meanings[] Meanings { get; set; }
 
         [JsonProperty("slug")]
         public string Slug { get; set; }
