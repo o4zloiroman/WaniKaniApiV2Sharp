@@ -35,11 +35,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JsonSubTypes, Version=1.6.0.0, Culture=neutral, PublicKeyToken=ee75fc290dbc1176, processorArchitecture=MSIL">
-      <HintPath>..\dotCrab\packages\JsonSubTypes.1.6.0\lib\net46\JsonSubTypes.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\dotCrab\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,7 +60,7 @@
     <Compile Include="Models\ContextSentences.cs" />
     <Compile Include="Models\BaseSubject.cs" />
     <Compile Include="Models\Vocabulary.cs" />
-    <Compile Include="WaniKani.cs" />
+    <Compile Include="WaniKaniClient.cs" />
     <Compile Include="Models\Post\CreateAStudyRoot.cs" />
     <Compile Include="Models\Post\CreateAReviewRoot.cs" />
     <Compile Include="Models\Post\StudyMaterial.cs" />
@@ -92,7 +89,6 @@
     <Compile Include="Models\Post\Review.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

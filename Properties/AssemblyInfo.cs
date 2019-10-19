@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("WaniKaniApi")]
-[assembly: AssemblyDescription("A library for WaniKani API V2.")]
+[assembly: AssemblyDescription("A library for WaniKaniClient API V2.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Vitaly Sidorenko")]
 [assembly: AssemblyProduct("wanikani")]
