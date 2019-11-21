@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace WanikaniApi.Models
 {
-    public class Summary
+    public class Summary : BaseResponse<Summary>
     {
         [JsonProperty("lessons")]
         public Lesson[] Lessons { get; set; }

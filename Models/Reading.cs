@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
-using System;
 
 namespace WanikaniApi.Models
 {
-    public class Meanings
+    public class Reading
     {
-        [JsonProperty("meaning")]
-        public string Meaning { get; set; }
+        [JsonProperty("reading")]
+        public string Value { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
 
         [JsonProperty("primary")]
         public bool Primary { get; set; }

@@ -1,8 +1,8 @@
 ﻿namespace WanikaniApi.Models
 {
-    public interface IReadable
+    public interface IReadable : ISubject
     {
-        Readings[] Readings { get; set; }
+        Reading[] Readings { get; set; }
         
         int[] ComponentSubjectIds { get; set; }
 

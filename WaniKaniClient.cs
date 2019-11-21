@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -42,7 +44,7 @@ namespace WanikaniApi
         /// <summary>
         /// A basic get method for custom requests.
         /// </summary>
-        /// <param name="apiEndpointPath">https://api.wanikani.com/v2[apiEndpointPath] Can include query parameters.</param>
+        /// <param name="apiEndpointPath">https://api.wanikani.com/v2/[apiEndpointPath] Can include query parameters.</param>
         /// <returns></returns>
         public string Get(string apiEndpointPath)
         {
@@ -51,16 +53,15 @@ namespace WanikaniApi
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _apiToken);
                 var response = httpClient.GetAsync(apiEndpointPath).Result;
-                var json = response.Content.ReadAsStringAsync().Result;
                 response.EnsureSuccessStatusCode();
-                return json;
+                return response.Content.ReadAsStringAsync().Result;
             }
         }
 
         /// <summary>
         /// A basic post method for custom requests.
         /// </summary>
-        /// <param name="apiEndpointPath">https://api.wanikani.com/v2[apiEndpointPath]. Can include query parameters.</param>
+        /// <param name="apiEndpointPath">https://api.wanikani.com/v2/[apiEndpointPath]. Can include query parameters.</param>
         /// <param name="data">Serialized json string.</param>
         public void Post(string apiEndpointPath, string data)
         {
@@ -68,7 +69,7 @@ namespace WanikaniApi
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _apiToken);
-                StringContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
+                var content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
                 var response = httpClient.PostAsync(apiEndpointPath, content).Result;
                 response.EnsureSuccessStatusCode();
             }
@@ -77,7 +78,7 @@ namespace WanikaniApi
         /// <summary>
         /// A basic put method for custom requests.
         /// </summary>
-        /// <param name="apiEndpointPath">https://api.wanikani.com/v2[apiEndpointPath]. Can include query parameters.</param>
+        /// <param name="apiEndpointPath">https://api.wanikani.com/v2/[apiEndpointPath]. Can include query parameters.</param>
         /// <param name="data">Serialized json string.</param>
         public void Put(string apiEndpointPath, string data)
         {
@@ -95,40 +96,40 @@ namespace WanikaniApi
         /// Mark the assignment as started, moving the assignment from the lessons to the review queue. 
         /// </summary>
         /// <param name="id">Unique identifier of the assignment.</param>
-        public void StartAnAssignment(int id)
+        public void StartAssignment(int id)
         {
-            var startAssignment = new Models.Put.StartAnAssignmentRoot
+            var startAssignment = new //Models.Put.StartAnAssignmentRoot
             {
-                StartedAt = DateTime.UtcNow
+                started_at = DateTime.UtcNow
             };
 
-            string data = JsonConvert.SerializeObject(startAssignment);
+            var data = JsonConvert.SerializeObject(startAssignment);
 
-            Put("assignments/" + id + "/start", data);
+            Put($"assignments/{id}/start", data);
         }
 
         /// <summary>
         /// Returns an updated summary of user information.
         /// </summary>
         public void UpdateUserInformation
-            (int LessonsBatchSize, bool LessonsAutoplayAudio, bool ReviewsAutoplayAudio, bool ReviewsDisplaySrsIndicator, string LessonsPresentationOrder)
+            (int lessonsBatchSize, bool lessonsAutoplayAudio, bool reviewsAutoplayAudio, bool reviewsDisplaySrsIndicator, string lessonsPresentationOrder)
         {
-            var updateUserInformation = new Models.Put.UpdateUserInformationRoot
+            var updateUserInformation = new //Models.Put.UpdateUserInformationRoot
             {
-                User = new Models.Put.User
+                user = new //Models.Put.User
                 {
                     Preferences = new Preferences
                     {
-                        LessonsBatchSize = LessonsBatchSize,
-                        LessonsAutoplayAudio = LessonsAutoplayAudio,
-                        ReviewsAutoplayAudio = ReviewsAutoplayAudio,
-                        ReviewsDisplaySrsIndicator = ReviewsDisplaySrsIndicator,
-                        LessonsPresentationOrder = LessonsPresentationOrder
+                        LessonsBatchSize = lessonsBatchSize,
+                        LessonsAutoplayAudio = lessonsAutoplayAudio,
+                        ReviewsAutoplayAudio = reviewsAutoplayAudio,
+                        ReviewsDisplaySrsIndicator = reviewsDisplaySrsIndicator,
+                        LessonsPresentationOrder = lessonsPresentationOrder
                     }
                 }
             };
 
-            string data = JsonConvert.SerializeObject(updateUserInformation);
+            var data = JsonConvert.SerializeObject(updateUserInformation);
 
             Put("user", data);
         }
@@ -136,20 +137,20 @@ namespace WanikaniApi
         /// <summary>
         /// Updates a study material for a specific id.
         /// </summary>
-        public void UpdateAStudyMaterial(int SubjectId, string MeaningNote = null, string ReadingNote = null, List<string> MeaningSynonyms = null)
+        public void UpdateStudyMaterial(int subjectId, string meaningNote = null, string readingNote = null, List<string> meaningSynonyms = null)
         {
-            var createAStudyMaterial = new Models.Post.CreateAStudyRoot
+            var createAStudyMaterial = new //Models.Post.CreateAStudyRoot
             {
-                StudyMaterial = new Models.Post.StudyMaterial
+                study_material = new //Models.Post.StudyMaterial
                 {
-                    SubjectId = SubjectId,
-                    MeaningNote = MeaningNote,
-                    ReadingNote = ReadingNote,
-                    MeaningSynonyms = MeaningSynonyms
+                    subject_id = subjectId,
+                    meaning_note = meaningNote,
+                    reading_note = readingNote,
+                    meaning_synonyms = meaningSynonyms
                 }
             };
 
-            string data = JsonConvert.SerializeObject(createAStudyMaterial);
+            var data = JsonConvert.SerializeObject(createAStudyMaterial);
 
             Put("study_materials", data);
         }
@@ -157,19 +158,19 @@ namespace WanikaniApi
         /// <summary>
         /// Returns a collection of all assignments, ordered by ascending created_at, 500 at a time.
         /// </summary>
-        public List<ResourceResponse<Assignments>> GetAllAssignments
-            ([Optional] DateTime? available_after, [Optional] DateTime? available_before, [Optional] bool? burned, [Optional] bool? hidden, [Optional] int[] ids,
-            [Optional] int[] levels, [Optional] bool? passed, [Optional] bool? resurrected, [Optional] int[] srs_stages, [Optional] bool? started, [Optional] int[] subject_ids,
-            [Optional] string[] subject_types, [Optional] bool? unlocked, [Optional] DateTime? updated_after)
+        public List<Assignment> GetAssignments
+            ([Optional] DateTime? availableAfter, [Optional] DateTime? availableBefore, [Optional] bool? burned, [Optional] bool? hidden, [Optional] int[] ids,
+            [Optional] int[] levels, [Optional] bool? passed, [Optional] bool? resurrected, [Optional] int[] srsStages, [Optional] bool? started, [Optional] int[] subjectIds,
+            [Optional] string[] subjectTypes, [Optional] bool? unlocked, [Optional] DateTime? updatedAfter)
         {
-            string query = "?";
-            string and = "&";
+            const string and = "&";
+            var query = "?";
 
-            if (available_after != null)
-                query += "available_after=" + available_after.ToString() + and;
+            if (availableAfter != null)
+                query += "available_after=" + availableAfter + and;
 
-            if (available_before != null)
-                query += "available_before=" + available_before.ToString() + and;
+            if (availableBefore != null)
+                query += "available_before=" + availableBefore + and;
 
             if (burned != null)
                 query += "burned=" + burned + and;
@@ -186,60 +187,57 @@ namespace WanikaniApi
             if (resurrected != null)
                 query += "resurrected=" + resurrected + and;
 
-            if (srs_stages != null)
-                query += "srs_stages=" + string.Join(",", srs_stages) + and;
+            if (srsStages != null)
+                query += "srs_stages=" + string.Join(",", srsStages) + and;
 
             if (started != null)
                 query += "started=" + started + and;
 
-            if (subject_ids != null)
-                query += "subject_ids=" + string.Join(",", subject_ids) + and;
+            if (subjectIds != null)
+                query += "subject_ids=" + string.Join(",", subjectIds) + and;
 
-            if (subject_types != null)
-                query += "subject_types=" + string.Join(",", subject_types) + and;
+            if (subjectTypes != null)
+                query += "subject_types=" + string.Join(",", subjectTypes) + and;
 
             if (unlocked != null)
                 query += "unlocked=" + unlocked + and;
 
-            if (updated_after != null)
-                query += "updated_after=" + updated_after.ToString();
+            if (updatedAfter != null)
+                query += "updatedAfter=" + updatedAfter;
 
             var json = Get("assignments" + query.ToLower());
-            var assignments  = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignments>>>(json).Data;
-            return assignments;
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
         }
 
         /// <summary>
-        /// Returns a collection of all level progressions, ordered by ascending created_at, 500 at a time.
+        /// Returns a collection of all level progressions, ordered by ascending CreatedAt, 500 at a time.
         /// </summary>
         /// <param name="ids">Only level progressions where data.id matches one of the array values are returned.</param>
-        /// <param name="updated_after">Only level_progressions updated after this time are returned.</param>
+        /// <param name="updatedAfter">Only level_progressions updated after this time are returned.</param>
         /// <returns></returns>
-        public List<ResourceResponse<LevelProgression>> GetAllLevelProgressions([Optional] int[] ids, [Optional] DateTime updated_after)
+        public List<LevelProgression> GetLevelProgressions([Optional] int[] ids, [Optional] DateTime updatedAfter)
         {
-            string idsP = "";
-            string updated_afterP = "";
-            var n = new DateTimeOffset(DateTime.MinValue, TimeSpan.Zero);
+            var idsP = "";
+            var updatedAfterP = "";
 
             if (ids != null)
                 idsP = "ids=" + string.Join(",", ids);
             
-            if (updated_after != n)
-                updated_afterP = "updated_after=" + updated_after;
+            if (updatedAfter != new DateTimeOffset(DateTime.MinValue, TimeSpan.Zero))
+                updatedAfterP = "updatedAfter=" + updatedAfter;
 
-            var json = Get($"level_progressions?{updated_afterP}&{idsP}");
-            var levelProgression = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<LevelProgression>>>(json).Data;
-            return levelProgression;            
+            var json = Get($"level_progressions?{updatedAfterP}&{idsP}");
+            return JsonConvert.DeserializeObject<CollectionResponse<LevelProgression>>(json).Data;
         }
 
         /// <summary>
         /// Returns a collection of all study material, ordered by ascending created_at, 500 at a time.
         /// </summary>        
-        public List<ResourceResponse<StudyMaterial>> GetAllStudyMaterials([Optional] bool? hidden, [Optional] int[] ids, [Optional] int[] subject_ids, 
-            [Optional] string[] subject_types, [Optional] DateTime? updated_after)
+        public List<StudyMaterial> GetStudyMaterials([Optional] bool? hidden, [Optional] int[] ids, [Optional] int[] subjectIds, 
+            [Optional] string[] subjectTypes, [Optional] DateTime? updatedAfter)
         {
-            string query = "?";
-            string and = "&";
+            const string and = "&";
+            var query = "?";
 
             if (hidden != null)
                 query += "hidden=" + hidden + and;
@@ -247,27 +245,26 @@ namespace WanikaniApi
             if (ids != null)
                 query += "subject_ids=" + string.Join(",", ids) + and;
 
-            if (subject_ids != null)
-                query += "subject_ids=" + string.Join(",", subject_ids) + and;
+            if (subjectIds != null)
+                query += "subject_ids=" + string.Join(",", subjectIds) + and;
 
-            if (subject_types != null)
-                query += "subject_types=" + string.Join(",", subject_types) + and;
+            if (subjectTypes != null)
+                query += "subject_types=" + string.Join(",", subjectTypes) + and;
 
-            if (updated_after != null)
-                query += "updated_after=" + updated_after.ToString();
+            if (updatedAfter != null)
+                query += "updatedAfter=" + updatedAfter;
 
             var json = Get("study_materials" + query.ToLower());
-            var studyMaterials = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<StudyMaterial>>>(json).Data;
-            return studyMaterials;
+            return JsonConvert.DeserializeObject<CollectionResponse<StudyMaterial>>(json).Data;
         }
 
         /// <summary>
         /// Returns a collection of all subjects, ordered by ascending created_at, 1000 at a time.
         /// </summary>        
-        public List<ResourceResponse<Subject>> GetAllSubjects([Optional] int[] ids, [Optional] string[] types, [Optional] string[] slugs, [Optional] int[] levels,
-            [Optional] bool? hidden, [Optional] DateTime? updated_after)
+        public List<OldSubject> GetSubjects([Optional] int[] ids, [Optional] string[] types, [Optional] string[] slugs, [Optional] int[] levels,
+            [Optional] bool? hidden, [Optional] DateTime? updatedAfter)
         {
-            string query = "?";
+            var query = "?";
             const string and = "&";
 
             if (hidden != null)
@@ -285,51 +282,51 @@ namespace WanikaniApi
             if (levels != null)
                 query += "levels=" + string.Join(",", levels) + and;
 
-            if (updated_after != null)
-                query += "updated_after=" + updated_after;
+            if (updatedAfter != null)
+                query += "updatedAfter=" + updatedAfter;
 
             var json = Get("subjects" + query.ToLower());
-            var subjects = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Subject>>>(json).Data;
-            return subjects;
+            return JsonConvert.DeserializeObject<CollectionResponse<OldSubject>>(json).Data;
         }
 
         /// <summary>
         /// Creates a review for a specific subject_id. Using the related assignment_id is also a valid alternative to using subject_id. 
         /// Either of those have to bet set, but not both.
         /// </summary>
-        public void CreateAReview(int? subject_id, int? assignment_id, int incorrect_meaning_answers, int incorrect_reading_answers)
+        public void CreateReview(int? subjectId, int? assignmentId, int incorrectMeaningAnswers, int incorrectReadingAnswers)
         {
-            Models.Post.CreateAReviewRoot review;
-            if (subject_id != null)
+            object review;
+
+            if (subjectId != null)
             {
-                review = new Models.Post.CreateAReviewRoot
+                review = new //Models.Post.CreateAReviewRoot
                 {
-                    Review = new Models.Post.Review
+                    review = new //Models.Post.Review
                     {
-                        SubjectId = subject_id,
-                        IncorrectMeaningAnswers = incorrect_meaning_answers,
-                        IncorrectReadingAnswers = incorrect_reading_answers
+                        subject_id = subjectId,
+                        incorrect_meaning_answers = incorrectMeaningAnswers,
+                        incorrect_reading_answers = incorrectReadingAnswers
                     }
                 };
             }
-            else if(assignment_id != null)
+            else if(assignmentId != null)
             {
-                review = new Models.Post.CreateAReviewRoot
+                review = new //Models.Post.CreateAReviewRoot
                 {
-                    Review = new Models.Post.Review
+                    review = new //Models.Post.Review
                     {
-                        AssignmentId = assignment_id,
-                        IncorrectMeaningAnswers = incorrect_meaning_answers,
-                        IncorrectReadingAnswers = incorrect_reading_answers
+                        assignment_id = assignmentId,
+                        incorrect_meaning_answers = incorrectMeaningAnswers,
+                        incorrect_reading_answers = incorrectReadingAnswers
                     }
                 };
             }
             else
             {
-                throw new Exception("Either assignment_id or subject_id have to be set, but not both.");
+                throw new Exception("Either assignmentId or subjectId have to be set, but not both.");
             }
 
-            string data = JsonConvert.SerializeObject(review);
+            var data = JsonConvert.SerializeObject(review);
 
             Post("reviews", data);
         }
@@ -337,20 +334,20 @@ namespace WanikaniApi
         /// <summary>
         /// Creates a study material for a specific subject_id. The owner of the api key can only create one study_material per subject_id.
         /// </summary>
-        public void CreateAStudyMaterial(int SubjectId, string MeaningNote, string ReadingNote, List<string> MeaningSynonyms)
+        public void CreateStudyMaterial(int subjectId, string meaningNote, string readingNote, List<string> meaningSynonyms)
         {
-            var createAStudyMaterial = new Models.Post.CreateAStudyRoot
+            var createAStudyMaterial = new //Models.Post.CreateAStudyRoot
             {
-                StudyMaterial = new Models.Post.StudyMaterial
+                study_material = new //Models.Post.StudyMaterial
                 {
-                    SubjectId = SubjectId,
-                    MeaningNote = MeaningNote,
-                    ReadingNote = ReadingNote,
-                    MeaningSynonyms = MeaningSynonyms
+                    subject_id = subjectId,
+                    meaning_note = meaningNote,
+                    reading_note = readingNote,
+                    meaning_synonyms = meaningSynonyms
                 }
             };
 
-            string data = JsonConvert.SerializeObject(createAStudyMaterial);
+            var data = JsonConvert.SerializeObject(createAStudyMaterial);
 
             Post("study_materials", data);
         }
@@ -358,31 +355,28 @@ namespace WanikaniApi
         /// <summary>
         /// Retrieves a specific subject by its id.
         /// </summary>        
-        public Subject GetASpecificSubject(int id)
+        public Subject GetSubject(int id)
         {
             var json = Get($"subjects/{id}");
-            var subject = JsonConvert.DeserializeObject<ResourceResponse<Subject>>(json).Data;
-            return subject;
+            return JsonConvert.DeserializeObject<Subject>(json).Data;
         }
 
         /// <summary>
         /// Retrieves a specific assignment by its id.
         /// </summary>        
-        public Assignments GetASpecificAssignment(int id)
+        public Assignment GetAssignment(int id)
         {
             var json = Get($"assignments/{id}");
-            var assignment = JsonConvert.DeserializeObject<ResourceResponse<Assignments>>(json).Data;
-            return assignment;
+            return JsonConvert.DeserializeObject<Assignment>(json).Data;
         }
 
         /// <summary>
         /// Retrieves a specific study material by its id (not subject_id or assignment_id).
         /// </summary>
-        public StudyMaterial GetASpecificStudyMaterial(int id)
+        public StudyMaterial GetStudyMaterial(int id)
         {
             var json = Get($"study_materials/{id}");
-            var studyMaterial = JsonConvert.DeserializeObject<ResourceResponse<StudyMaterial>>(json).Data;
-            return studyMaterial;
+            return JsonConvert.DeserializeObject<StudyMaterial>(json).Data;
         }
 
         /// <summary>
@@ -391,8 +385,7 @@ namespace WanikaniApi
         public Summary GetSummary()
         {
             var json = Get("summary");
-            var summary = JsonConvert.DeserializeObject<BaseResponse<Summary>>(json).Data;
-            return summary;
+            return JsonConvert.DeserializeObject<Summary>(json).Data;
         }
         
         /// <summary>
@@ -401,96 +394,52 @@ namespace WanikaniApi
         public User GetUserInfo()
         {
             var json = Get("user");
-            var user = JsonConvert.DeserializeObject<BaseResponse<User>>(json).Data;
-            return user;
-        }
-
-        /// <summary>
-        /// Retrieves a specific study material related to a specific subject.
-        /// </summary>        
-        public StudyMaterial GetAStudyMaterial(int subject_id)
-        {
-            var json = Get($"study_materials/?subject_ids={subject_id}");
-            try
-            {
-                var studyMaterial = JsonConvert.DeserializeObject<ResourceResponse<StudyMaterial>>(json).Data;
-                return studyMaterial;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return JsonConvert.DeserializeObject<User>(json).Data;
         }
 
         /// <summary>
         /// Returns assignments which are immediately available for review.
         /// </summary>
-        public List<ResourceResponse<Subject>> GetSubjectsAvailableForReview()
+        public List<Assignment> GetSubjectsForReview()
         {
             var summary = GetSummary();
             if (summary.Reviews[0].SubjectIds.Length == 0) return null;
 
             var json = Get("assignments?immediately_available_for_review");
-            var assignments = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignments>>>(json).Data;
-            return AssignmentsIntoSubjects(assignments);
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
         }
 
-        public List<ResourceResponse<Assignments>> GetAssignmentsAvailableForReview()
+        public List<Assignment> GetAssignmentsForReview()
         {
             var summary = GetSummary();
             if (summary.Reviews[0].SubjectIds.Length == 0) return null;
 
             var json = Get("assignments?immediately_available_for_review");
-            return JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignments>>>(json).Data;
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
         }
 
         /// <summary>
         /// Returns assignments which are immediately available for lessons.
         /// </summary>
-        public List<ResourceResponse<Subject>> GetSubjectsAvailableForLessons()
+        public List<Assignment> GetSubjectsAvailableForLessons()
         {
             var summary = GetSummary();
-            if (summary.Lessons[0].SubjectIds.Length != 0)
-            {
-                var json = Get("assignments?immediately_available_for_lessons");
-                var assignments = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignments>>>(json).Data;
-                return AssignmentsIntoSubjects(assignments);
-            }
-            else
-                return null;
+            if (summary.Lessons[0].SubjectIds.Length == 0) return null;
+
+            var json = Get("assignments?immediately_available_for_lessons");
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
         }
 
         /// <summary>
         /// Returns assignments which are in the review state.
         /// </summary>
-        public List<ResourceResponse<Subject>> GetSubjectsInReview()
+        public List<Assignment> GetSubjectsInReview()
         {
             var summary = GetSummary();
-            if (summary.Lessons[0].SubjectIds.Length != 0)
-            {
-                var json = Get("assignments?in_review");
-                var assignments = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignments>>>(json).Data;
-                return AssignmentsIntoSubjects(assignments);
-            }
-            else
-                throw new Exception("No subjects are in the review state.");
-        }
+            if (summary.Lessons[0].SubjectIds.Length == 0) return null;
 
-        /// <summary>
-        /// Takes a list of assignments and returns a list of subjects.
-        /// </summary>
-        internal  List<ResourceResponse<Subject>> AssignmentsIntoSubjects(List<ResourceResponse<Assignments>> assignments)
-        {
-            var ids = new List<long>();
-
-            foreach (var assignment in assignments)
-            {
-                ids.Add(assignment.Data.SubjectId);
-            }
-
-            var json = Get("subjects?ids=" + String.Join(",", ids));
-            var subjects = JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Subject>>>(json).Data;
-            return subjects;
+            var json = Get("assignments?in_review");
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
         }
     }
 }

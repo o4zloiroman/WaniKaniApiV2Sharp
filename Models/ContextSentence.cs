@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace WanikaniApi.Models
 {
-    public class ContextSentences
+    public class ContextSentence
     {
         [JsonProperty("en")]
         public string En { get; set; }

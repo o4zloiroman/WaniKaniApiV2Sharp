@@ -3,13 +3,15 @@ using Newtonsoft.Json;
 
 namespace WanikaniApi.Models
 {
-    public class Assignments
+    public class Assignment : ResourceResponse<Assignment>
     {
         [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset CreatedAt { get; set; }
 
         [JsonProperty("subject_id")]
         public int SubjectId { get; set; }
+
+        public Lazy<ISubject> Subject => new Lazy<ISubject>(() => new WaniKaniClient().GetSubject(SubjectId));
 
         [JsonProperty("subject_type")]
         public string SubjectType { get; set; }
@@ -30,13 +32,13 @@ namespace WanikaniApi.Models
         public DateTimeOffset PassedAt { get; set; }
 
         [JsonProperty("burned_at")]
-        public object BurnedAt { get; set; }
+        public DateTimeOffset BurnedAt { get; set; }
 
         [JsonProperty("available_at", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset AvailableAt { get; set; }
 
         [JsonProperty("resurrected_at")]
-        public object ResurrectedAt { get; set; }
+        public DateTimeOffset ResurrectedAt { get; set; }
 
         [JsonProperty("passed")]
         public bool Passed { get; set; }

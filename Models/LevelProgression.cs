@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace WanikaniApi.Models
 {
-    public class LevelProgression
+    public class LevelProgression : ResourceResponse<LevelProgression>
     {
         [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime? CreatedAt { get; set; }

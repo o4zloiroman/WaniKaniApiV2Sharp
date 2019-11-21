@@ -1,14 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System;
 
 namespace WanikaniApi.Models
 {
-    public class Radical : BaseSubject
+    public class Radical : Subject
     {
         [JsonProperty("amalgamation_subject_ids")]
         public int[] AmalgamationSubjectIds { get; set; }
 
         [JsonProperty("character_images")]
-        public CharacterImages[] CharacterImages { get; set; }
+        public CharacterImage[] CharacterImages { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using System;
 
 namespace WanikaniApi.Models
 {
-    public class StudyMaterial
+    public class StudyMaterial : ResourceResponse<StudyMaterial>
     {
         [JsonProperty("created_at")]
         public DateTime? CreatedAt { get; set; }

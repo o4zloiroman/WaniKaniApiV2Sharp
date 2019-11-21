@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace WanikaniApi.Models
 {
     //https://docs.api.wanikani.com/20170710/?javascript#user
-    public class User
+    public class User : BaseResponse<User>
     {        
         [JsonProperty("id")]
         public Guid Id { get; set; }

@@ -2,7 +2,6 @@
 
 namespace WanikaniApi.Models
 {
-    //https://docs.api.wanikani.com/20170710/?javascript#get-user-information
     public class Preferences
     {
         [JsonProperty("lessons_batch_size", NullValueHandling = NullValueHandling.Ignore)]

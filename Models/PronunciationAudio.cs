@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
 
 namespace WanikaniApi.Models
 {
-    public class CharacterImages
+    public class PronunciationAudio
     {
         [JsonProperty("url")]
         public string Url { get; set; }
@@ -12,6 +11,6 @@ namespace WanikaniApi.Models
         public string ContentType { get; set; }
 
         [JsonProperty("metadata")]
-        public object Metadata { get; set; }
+        public Metadata Metadata { get; set; }
     }
 }

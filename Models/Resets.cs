@@ -3,7 +3,7 @@ using System;
 
 namespace WanikaniApi.Models
 {
-    class Resets
+    public class Resets
     {
         [JsonProperty("created_at")]
         public DateTimeOffset CreatedAt { get; set; }

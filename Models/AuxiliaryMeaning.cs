@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
-using System;
 
 namespace WanikaniApi.Models
 {
-    public class AuxiliaryMeanings
+    public class AuxiliaryMeaning
     {
         [JsonProperty("meaning")]
-        public string Meaning { get; set; }
+        public string Value { get; set; }
 
         [JsonProperty("type")]
         public string Type { get; set; }
