@@ -12,9 +12,9 @@ namespace WanikaniApi.Models
 
         Uri DocumentUrl { get; set; }
 
-        object HiddenAt { get; set; }
+        DateTimeOffset HiddenAt { get; set; }
 
-        long LessonPosition { get; set; }
+        int LessonPosition { get; set; }
 
         int Level { get; set; }
 

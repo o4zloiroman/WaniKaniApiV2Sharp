@@ -1,12 +1,11 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace WanikaniApi.Models
 {
     public class Metadata
     {
         [JsonProperty("gender")]
-        public string En { get; set; }
+        public string Gender { get; set; }
 
         [JsonProperty("source_id")]
         public int SourceId { get; set; }

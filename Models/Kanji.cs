@@ -2,7 +2,7 @@
 
 namespace WanikaniApi.Models
 {
-    public class Kanji : Subject, IReadable
+    public class Kanji : Subject, IReadable, ISubject
     {
         [JsonProperty("readings")]
         public Reading[] Readings { get; set; }
@@ -17,6 +17,6 @@ namespace WanikaniApi.Models
         public int[] AmalgamationSubjectIds { get; set; }
 
         [JsonProperty("visually_similar_subject_ids")]
-        public object[] VisuallySimilarSubjectIds { get; set; }
+        public int[] VisuallySimilarSubjectIds { get; set; }
     }
 }

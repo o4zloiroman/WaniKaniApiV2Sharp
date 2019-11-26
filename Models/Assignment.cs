@@ -11,7 +11,7 @@ namespace WanikaniApi.Models
         [JsonProperty("subject_id")]
         public int SubjectId { get; set; }
 
-        public Lazy<ISubject> Subject => new Lazy<ISubject>(() => new WaniKaniClient().GetSubject(SubjectId));
+        public Lazy<ISubject> Subject => new Lazy<ISubject>(() => WaniKaniClient.GetSubject(SubjectId));
 
         [JsonProperty("subject_type")]
         public string SubjectType { get; set; }

@@ -1,32 +1,32 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using WanikaniApi.Models;
 
 namespace WanikaniApi
 {
     public class WaniKaniClient
     {
-        private readonly string _apiToken;
+        private static string _apiToken;
+        private static readonly Regex _apiRegex = new Regex("^[a-f0-9-]{36}$");
 
-        public static string ApiToken { get; set; }
-
-        /// <summary>
-        /// Constructor that gets its token from a static ApiToken property.
-        /// </summary>
-        public WaniKaniClient()
+        public static string ApiToken
         {
-            var apiRegex = new Regex("^[a-f0-9-]{36}$");
-            if (apiRegex.IsMatch(ApiToken))
-                _apiToken = ApiToken;
-            else
+            get
             {
-                throw new ArgumentException("Invalid API token.");
+                return _apiToken;
+            }
+            set
+            {
+                if (_apiRegex.IsMatch(value))
+                    _apiToken = ApiToken;
+                else
+                {
+                    throw new ArgumentException("Invalid API token.");
+                }
             }
         }
 
@@ -45,13 +45,13 @@ namespace WanikaniApi
         /// A basic get method for custom requests.
         /// </summary>
         /// <param name="apiEndpointPath">https://api.wanikani.com/v2/[apiEndpointPath] Can include query parameters.</param>
-        /// <returns></returns>
-        public string Get(string apiEndpointPath)
+        public static string Get(string apiEndpointPath)
         {
             using (var httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri("https://api.wanikani.com/v2/");
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _apiToken);
+
                 var response = httpClient.GetAsync(apiEndpointPath).Result;
                 response.EnsureSuccessStatusCode();
                 return response.Content.ReadAsStringAsync().Result;
@@ -63,7 +63,7 @@ namespace WanikaniApi
         /// </summary>
         /// <param name="apiEndpointPath">https://api.wanikani.com/v2/[apiEndpointPath]. Can include query parameters.</param>
         /// <param name="data">Serialized json string.</param>
-        public void Post(string apiEndpointPath, string data)
+        public static void Post(string apiEndpointPath, string data)
         {
             using (var httpClient = new HttpClient())
             {
@@ -80,7 +80,7 @@ namespace WanikaniApi
         /// </summary>
         /// <param name="apiEndpointPath">https://api.wanikani.com/v2/[apiEndpointPath]. Can include query parameters.</param>
         /// <param name="data">Serialized json string.</param>
-        public void Put(string apiEndpointPath, string data)
+        public static void Put(string apiEndpointPath, string data)
         {
             using (var httpClient = new HttpClient())
             {
@@ -96,9 +96,9 @@ namespace WanikaniApi
         /// Mark the assignment as started, moving the assignment from the lessons to the review queue. 
         /// </summary>
         /// <param name="id">Unique identifier of the assignment.</param>
-        public void StartAssignment(int id)
+        public static void StartAssignment(int id)
         {
-            var startAssignment = new //Models.Put.StartAnAssignmentRoot
+            var startAssignment = new
             {
                 started_at = DateTime.UtcNow
             };
@@ -111,12 +111,12 @@ namespace WanikaniApi
         /// <summary>
         /// Returns an updated summary of user information.
         /// </summary>
-        public void UpdateUserInformation
+        public static void UpdateUserInformation
             (int lessonsBatchSize, bool lessonsAutoplayAudio, bool reviewsAutoplayAudio, bool reviewsDisplaySrsIndicator, string lessonsPresentationOrder)
         {
-            var updateUserInformation = new //Models.Put.UpdateUserInformationRoot
+            var updateUserInformation = new
             {
-                user = new //Models.Put.User
+                user = new
                 {
                     Preferences = new Preferences
                     {
@@ -137,11 +137,11 @@ namespace WanikaniApi
         /// <summary>
         /// Updates a study material for a specific id.
         /// </summary>
-        public void UpdateStudyMaterial(int subjectId, string meaningNote = null, string readingNote = null, List<string> meaningSynonyms = null)
+        public static void UpdateStudyMaterial(int subjectId, string meaningNote = null, string readingNote = null, List<string> meaningSynonyms = null)
         {
-            var createAStudyMaterial = new //Models.Post.CreateAStudyRoot
+            var createAStudyMaterial = new
             {
-                study_material = new //Models.Post.StudyMaterial
+                study_material = new
                 {
                     subject_id = subjectId,
                     meaning_note = meaningNote,
@@ -156,9 +156,9 @@ namespace WanikaniApi
         }
 
         /// <summary>
-        /// Returns a collection of all assignments, ordered by ascending created_at, 500 at a time.
+        /// Returns a collection of all assignments, ordered by ascending CreatedAt, 500 at a time.
         /// </summary>
-        public List<Assignment> GetAssignments
+        public static List<Assignment> GetAssignments
             ([Optional] DateTime? availableAfter, [Optional] DateTime? availableBefore, [Optional] bool? burned, [Optional] bool? hidden, [Optional] int[] ids,
             [Optional] int[] levels, [Optional] bool? passed, [Optional] bool? resurrected, [Optional] int[] srsStages, [Optional] bool? started, [Optional] int[] subjectIds,
             [Optional] string[] subjectTypes, [Optional] bool? unlocked, [Optional] DateTime? updatedAfter)
@@ -167,22 +167,25 @@ namespace WanikaniApi
             var query = "?";
 
             if (availableAfter != null)
-                query += "available_after=" + availableAfter + and;
+                query += "available_after=" + availableAfter.Value.ToUniversalTime() + and;
 
             if (availableBefore != null)
-                query += "available_before=" + availableBefore + and;
+                query += "available_before=" + availableBefore.Value.ToUniversalTime() + and;
 
             if (burned != null)
                 query += "burned=" + burned + and;
 
             if (hidden != null)
-                query += "burned=" + burned + and;
+                query += "burned=" + hidden + and;
 
             if (ids != null)
                 query += "ids=" +string.Join(",", ids) + and;
 
             if (levels != null)
                 query += "levels=" + string.Join(",", levels) + and;
+
+            if (passed != null)
+                query += "passed=" + passed + and;
 
             if (resurrected != null)
                 query += "resurrected=" + resurrected + and;
@@ -203,7 +206,7 @@ namespace WanikaniApi
                 query += "unlocked=" + unlocked + and;
 
             if (updatedAfter != null)
-                query += "updatedAfter=" + updatedAfter;
+                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
 
             var json = Get("assignments" + query.ToLower());
             return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
@@ -212,10 +215,10 @@ namespace WanikaniApi
         /// <summary>
         /// Returns a collection of all level progressions, ordered by ascending CreatedAt, 500 at a time.
         /// </summary>
-        /// <param name="ids">Only level progressions where data.id matches one of the array values are returned.</param>
-        /// <param name="updatedAfter">Only level_progressions updated after this time are returned.</param>
+        /// <param name="ids">Only LevelProgressions where Data.Id matches one of the array values are returned.</param>
+        /// <param name="updatedAfter">Only LevelProgressions updated after this time are returned.</param>
         /// <returns></returns>
-        public List<LevelProgression> GetLevelProgressions([Optional] int[] ids, [Optional] DateTime updatedAfter)
+        public static List<LevelProgression> GetLevelProgressions([Optional] int[] ids, [Optional] DateTime? updatedAfter)
         {
             var idsP = "";
             var updatedAfterP = "";
@@ -223,17 +226,17 @@ namespace WanikaniApi
             if (ids != null)
                 idsP = "ids=" + string.Join(",", ids);
             
-            if (updatedAfter != new DateTimeOffset(DateTime.MinValue, TimeSpan.Zero))
-                updatedAfterP = "updatedAfter=" + updatedAfter;
+            if (updatedAfter != null)
+                updatedAfterP = "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
 
             var json = Get($"level_progressions?{updatedAfterP}&{idsP}");
             return JsonConvert.DeserializeObject<CollectionResponse<LevelProgression>>(json).Data;
         }
 
         /// <summary>
-        /// Returns a collection of all study material, ordered by ascending created_at, 500 at a time.
+        /// Returns a collection of all study material, ordered by ascending CreatedAt, 500 at a time.
         /// </summary>        
-        public List<StudyMaterial> GetStudyMaterials([Optional] bool? hidden, [Optional] int[] ids, [Optional] int[] subjectIds, 
+        public static List<StudyMaterial> GetStudyMaterials([Optional] bool? hidden, [Optional] int[] ids, [Optional] int[] subjectIds, 
             [Optional] string[] subjectTypes, [Optional] DateTime? updatedAfter)
         {
             const string and = "&";
@@ -252,16 +255,16 @@ namespace WanikaniApi
                 query += "subject_types=" + string.Join(",", subjectTypes) + and;
 
             if (updatedAfter != null)
-                query += "updatedAfter=" + updatedAfter;
+                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
 
             var json = Get("study_materials" + query.ToLower());
             return JsonConvert.DeserializeObject<CollectionResponse<StudyMaterial>>(json).Data;
         }
 
         /// <summary>
-        /// Returns a collection of all subjects, ordered by ascending created_at, 1000 at a time.
+        /// Returns a collection of all subjects, ordered by ascending CreatedAt, 1000 at a time.
         /// </summary>        
-        public List<OldSubject> GetSubjects([Optional] int[] ids, [Optional] string[] types, [Optional] string[] slugs, [Optional] int[] levels,
+        public static List<ISubject> GetSubjects([Optional] int[] ids, [Optional] string[] types, [Optional] string[] slugs, [Optional] int[] levels,
             [Optional] bool? hidden, [Optional] DateTime? updatedAfter)
         {
             var query = "?";
@@ -283,37 +286,24 @@ namespace WanikaniApi
                 query += "levels=" + string.Join(",", levels) + and;
 
             if (updatedAfter != null)
-                query += "updatedAfter=" + updatedAfter;
+                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
 
             var json = Get("subjects" + query.ToLower());
-            return JsonConvert.DeserializeObject<CollectionResponse<OldSubject>>(json).Data;
+            return JsonConvert.DeserializeObject<CollectionResponse<ISubject>>(json).Data;
         }
 
         /// <summary>
-        /// Creates a review for a specific subject_id. Using the related assignment_id is also a valid alternative to using subject_id. 
-        /// Either of those have to bet set, but not both.
+        /// Creates a review for a specific subjectId. Using the related assignmentId is also a valid alternative to using subjectId.
         /// </summary>
-        public void CreateReview(int? subjectId, int? assignmentId, int incorrectMeaningAnswers, int incorrectReadingAnswers)
+        public static void PostReview(int subjectId, [Optional] int? assignmentId, int incorrectMeaningAnswers, int incorrectReadingAnswers)
         {
             object review;
 
-            if (subjectId != null)
+            if (assignmentId != null)
             {
-                review = new //Models.Post.CreateAReviewRoot
+                review = new
                 {
-                    review = new //Models.Post.Review
-                    {
-                        subject_id = subjectId,
-                        incorrect_meaning_answers = incorrectMeaningAnswers,
-                        incorrect_reading_answers = incorrectReadingAnswers
-                    }
-                };
-            }
-            else if(assignmentId != null)
-            {
-                review = new //Models.Post.CreateAReviewRoot
-                {
-                    review = new //Models.Post.Review
+                    review = new
                     {
                         assignment_id = assignmentId,
                         incorrect_meaning_answers = incorrectMeaningAnswers,
@@ -323,22 +313,29 @@ namespace WanikaniApi
             }
             else
             {
-                throw new Exception("Either assignmentId or subjectId have to be set, but not both.");
+                review = new
+                {
+                    review = new
+                    {
+                        subject_id = subjectId,
+                        incorrect_meaning_answers = incorrectMeaningAnswers,
+                        incorrect_reading_answers = incorrectReadingAnswers
+                    }
+                };
             }
 
             var data = JsonConvert.SerializeObject(review);
-
             Post("reviews", data);
         }
 
         /// <summary>
         /// Creates a study material for a specific subject_id. The owner of the api key can only create one study_material per subject_id.
         /// </summary>
-        public void CreateStudyMaterial(int subjectId, string meaningNote, string readingNote, List<string> meaningSynonyms)
+        public static void PostStudyMaterial(int subjectId, string meaningNote, string readingNote, List<string> meaningSynonyms)
         {
-            var createAStudyMaterial = new //Models.Post.CreateAStudyRoot
+            var createAStudyMaterial = new
             {
-                study_material = new //Models.Post.StudyMaterial
+                study_material = new
                 {
                     subject_id = subjectId,
                     meaning_note = meaningNote,
@@ -355,7 +352,7 @@ namespace WanikaniApi
         /// <summary>
         /// Retrieves a specific subject by its id.
         /// </summary>        
-        public Subject GetSubject(int id)
+        public static Subject GetSubject(int id)
         {
             var json = Get($"subjects/{id}");
             return JsonConvert.DeserializeObject<Subject>(json).Data;
@@ -373,7 +370,7 @@ namespace WanikaniApi
         /// <summary>
         /// Retrieves a specific study material by its id (not subject_id or assignment_id).
         /// </summary>
-        public StudyMaterial GetStudyMaterial(int id)
+        public static StudyMaterial GetStudyMaterial(int id)
         {
             var json = Get($"study_materials/{id}");
             return JsonConvert.DeserializeObject<StudyMaterial>(json).Data;
@@ -382,7 +379,7 @@ namespace WanikaniApi
         /// <summary>
         /// Retrieves a summary report.
         /// </summary>        
-        public Summary GetSummary()
+        public static Summary GetSummary()
         {
             var json = Get("summary");
             return JsonConvert.DeserializeObject<Summary>(json).Data;
@@ -391,7 +388,7 @@ namespace WanikaniApi
         /// <summary>
         /// Returns a summary of user information.
         /// </summary>
-        public User GetUserInfo()
+        public static User GetUserInfo()
         {
             var json = Get("user");
             return JsonConvert.DeserializeObject<User>(json).Data;
@@ -400,16 +397,7 @@ namespace WanikaniApi
         /// <summary>
         /// Returns assignments which are immediately available for review.
         /// </summary>
-        public List<Assignment> GetSubjectsForReview()
-        {
-            var summary = GetSummary();
-            if (summary.Reviews[0].SubjectIds.Length == 0) return null;
-
-            var json = Get("assignments?immediately_available_for_review");
-            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
-        }
-
-        public List<Assignment> GetAssignmentsForReview()
+        public static List<Assignment> GetReviews()
         {
             var summary = GetSummary();
             if (summary.Reviews[0].SubjectIds.Length == 0) return null;
@@ -421,7 +409,7 @@ namespace WanikaniApi
         /// <summary>
         /// Returns assignments which are immediately available for lessons.
         /// </summary>
-        public List<Assignment> GetSubjectsAvailableForLessons()
+        public static List<Assignment> GetLessons()
         {
             var summary = GetSummary();
             if (summary.Lessons[0].SubjectIds.Length == 0) return null;
@@ -433,7 +421,7 @@ namespace WanikaniApi
         /// <summary>
         /// Returns assignments which are in the review state.
         /// </summary>
-        public List<Assignment> GetSubjectsInReview()
+        public static List<Assignment> GetInReview()
         {
             var summary = GetSummary();
             if (summary.Lessons[0].SubjectIds.Length == 0) return null;

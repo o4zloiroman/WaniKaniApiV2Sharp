@@ -18,10 +18,10 @@ namespace WanikaniApi.Models
         public Uri DocumentUrl { get; set; }
 
         [JsonProperty("hidden_at")]
-        public object HiddenAt { get; set; }
+        public DateTimeOffset HiddenAt { get; set; }
 
         [JsonProperty("lesson_position")]
-        public long LessonPosition { get; set; }
+        public int LessonPosition { get; set; }
 
         [JsonProperty("level")]
         public int Level { get; set; }
