@@ -81,6 +81,8 @@
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\Preferences.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Models\SrsStage.cs" />
+    <Compile Include="Models\VoiceActor.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

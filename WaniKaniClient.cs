@@ -394,6 +394,21 @@ namespace WanikaniApi
             return JsonConvert.DeserializeObject<User>(json).Data;
         }
 
+        public static List<VoiceActor> GetVoiceActors([Optional] int[] ids, [Optional] DateTime? updatedAfter)
+        {
+            var idsP = "";
+            var updatedAfterP = "";
+
+            if(ids != null)
+                idsP = string.Join(",", ids);
+
+            if (updatedAfter != null)
+                updatedAfterP = updatedAfter.Value.ToUniversalTime().ToString();
+
+            var json = Get($"voice_actors?ids={idsP}&updated_after={updatedAfterP}");
+            return JsonConvert.DeserializeObject<CollectionResponse<VoiceActor>>(json).Data;
+        }
+
         /// <summary>
         /// Returns assignments which are immediately available for review.
         /// </summary>
