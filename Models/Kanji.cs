@@ -2,7 +2,7 @@
 
 namespace WanikaniApi.Models
 {
-    public class Kanji : Subject, IReadable, ISubject
+    public class Kanji : Subject, IReadable
     {
         [JsonProperty("readings")]
         public Reading[] Readings { get; set; }

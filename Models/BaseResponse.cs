@@ -15,6 +15,6 @@ namespace WanikaniApi.Models
         public string Url { get; set; }
 
         [JsonProperty("data_updated_at")]
-        public DateTime? DataUpdatedAt { get; set; }        
+        public DateTimeOffset DataUpdatedAt { get; set; }        
     }
 }

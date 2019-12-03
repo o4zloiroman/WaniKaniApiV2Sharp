@@ -6,13 +6,13 @@ namespace WanikaniApi.Models
     public class StudyMaterial : ResourceResponse<StudyMaterial>
     {
         [JsonProperty("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; }
 
         [JsonProperty("subject_id")]
         public int SubjectId { get; set; }
 
         [JsonProperty("subject_type")]
-        public string SubjectType { get; set; }
+        public string SubjectType { get; }
 
         [JsonProperty("meaning_note")]
         public string MeaningNote { get; set; }

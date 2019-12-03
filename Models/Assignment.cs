@@ -3,19 +3,19 @@ using Newtonsoft.Json;
 
 namespace WanikaniApi.Models
 {
-    public class Assignment : ResourceResponse<Assignment>
+    public class Assignment
     {
         [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; }
 
         [JsonProperty("subject_id")]
-        public int SubjectId { get; set; }
+        public int SubjectId { get; }
 
-        public Lazy<ISubject> Subject => new Lazy<ISubject>(() => WaniKaniClient.GetSubject(SubjectId));
+        public Lazy<Subject> Subject => new Lazy<Subject>(() => WaniKaniClient.GetSubject(SubjectId));
 
         [JsonProperty("subject_type")]
-        public string SubjectType { get; set; }
-
+        public string SubjectType { get; }
+        
         [JsonProperty("srs_stage")]
         public int SrsStage { get; set; }
 
@@ -23,27 +23,27 @@ namespace WanikaniApi.Models
         public string SrsStageName { get; set; }
 
         [JsonProperty("unlocked_at", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTimeOffset UnlockedAt { get; set; }
+        public DateTimeOffset? UnlockedAt { get; set; }
 
         [JsonProperty("started_at", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTimeOffset StartedAt { get; set; }
+        public DateTimeOffset? StartedAt { get; set; }
 
         [JsonProperty("passed_at", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTimeOffset PassedAt { get; set; }
+        public DateTimeOffset? PassedAt { get; }
 
-        [JsonProperty("burned_at")]
-        public DateTimeOffset BurnedAt { get; set; }
+        [JsonProperty("burned_at", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? BurnedAt { get; }
 
         [JsonProperty("available_at", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTimeOffset AvailableAt { get; set; }
+        public DateTimeOffset? AvailableAt { get; set; }
 
-        [JsonProperty("resurrected_at")]
-        public DateTimeOffset ResurrectedAt { get; set; }
-
+        [JsonProperty("resurrected_at", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? ResurrectedAt { get; set; }
+        
         [JsonProperty("passed")]
-        public bool Passed { get; set; }
-
-        [JsonProperty("resurrected")]
-        public bool Resurrected { get; set; }
+        public bool Passed { get; }
+        
+        [JsonProperty("hidden")]
+        public bool Hidden { get; }
     }
 }

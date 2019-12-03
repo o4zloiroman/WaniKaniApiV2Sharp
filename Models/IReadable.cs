@@ -1,6 +1,6 @@
 ﻿namespace WanikaniApi.Models
 {
-    public interface IReadable : ISubject
+    public interface IReadable
     {
         Reading[] Readings { get; set; }
         

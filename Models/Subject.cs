@@ -3,7 +3,7 @@ using System;
 
 namespace WanikaniApi.Models
 {
-    public abstract class Subject : ResourceResponse<Subject>, ISubject
+    public abstract class Subject
     {
         [JsonProperty("auxiliary_meanings")]
         public AuxiliaryMeaning[] AuxiliaryMeanings { get; set; }
@@ -11,14 +11,14 @@ namespace WanikaniApi.Models
         [JsonProperty("characters", NullValueHandling = NullValueHandling.Ignore)]
         public string Characters { get; set; }
 
-        [JsonProperty("created_at")]
-        public DateTimeOffset CreatedAt { get; set; }
+        [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? CreatedAt { get; set; }
 
         [JsonProperty("document_url")]
         public Uri DocumentUrl { get; set; }
 
-        [JsonProperty("hidden_at")]
-        public DateTimeOffset HiddenAt { get; set; }
+        [JsonProperty("hidden_at", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? HiddenAt { get; set; }
 
         [JsonProperty("lesson_position")]
         public int LessonPosition { get; set; }

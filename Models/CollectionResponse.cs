@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace WanikaniApi.Models
 {
-    public abstract class CollectionResponse<T> : ResourceResponse<List<T>>
+    public class CollectionResponse<T> : BaseResponse<List<T>>
     {
         [JsonProperty("total_count")]
         public int TotalCount { get; set; }
