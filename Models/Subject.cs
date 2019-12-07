@@ -15,7 +15,7 @@ namespace WanikaniApi.Models
         public DateTimeOffset? CreatedAt { get; set; }
 
         [JsonProperty("document_url")]
-        public Uri DocumentUrl { get; set; }
+        public string DocumentUrl { get; set; }
 
         [JsonProperty("hidden_at", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? HiddenAt { get; set; }

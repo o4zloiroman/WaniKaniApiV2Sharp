@@ -9,9 +9,9 @@ namespace WanikaniApi.Models
         public int PerPage { get; set; }
 
         [JsonProperty("next_url")]
-        public Uri NextUrl { get; set; }
+        public string NextUrl { get; set; }
 
         [JsonProperty("previous_url")]
-        public object PreviousUrl { get; set; }
+        public string PreviousUrl { get; set; }
     }
 }

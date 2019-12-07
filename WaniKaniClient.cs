@@ -9,12 +9,15 @@ using WanikaniApi.Models;
 
 namespace WanikaniApi
 {
-    public class WaniKaniClient
+    public static class WaniKaniClient
     {
         private const string And = "&";
         private static string _apiToken;
         private static readonly Regex ApiRegex = new Regex("^[a-f0-9-]{36}$");
 
+        /// <summary>
+        /// API V2 token. 
+        /// </summary>
         public static string ApiToken
         {
             get => _apiToken;
@@ -64,7 +67,7 @@ namespace WanikaniApi
         }
 
         /// <summary>
-        /// Updates a study material for a specific id.
+        /// Updates a study material for a specific Id.
         /// </summary>
         public static void UpdateStudyMaterial(StudyMaterial studyMaterial)
         {
@@ -81,7 +84,7 @@ namespace WanikaniApi
         /// <summary>
         /// Returns a collection of all assignments, ordered by ascending CreatedAt, 500 at a time.
         /// </summary>
-        public static List<Assignment> GetAssignments
+        public static CollectionResponse<Assignment> GetAssignments
             ([Optional] DateTime? availableAfter, [Optional] DateTime? availableBefore, [Optional] bool? burned, [Optional] bool? hidden, [Optional] int[] ids,
             [Optional] int[] levels, [Optional] bool? passed, [Optional] bool? resurrected, [Optional] int[] srsStages, [Optional] bool? started, [Optional] int[] subjectIds,
             [Optional] string[] subjectTypes, [Optional] bool? unlocked, [Optional] DateTime? updatedAfter)
@@ -89,10 +92,10 @@ namespace WanikaniApi
             var query = "?";
 
             if (availableAfter != null)
-                query += "available_after=" + availableAfter.Value.ToUniversalTime() + And;
+                query += "available_after=" + availableAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ") + And;
 
             if (availableBefore != null)
-                query += "available_before=" + availableBefore.Value.ToUniversalTime() + And;
+                query += "available_before=" + availableBefore.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ") + And;
 
             if (burned != null)
                 query += "burned=" + burned + And;
@@ -128,19 +131,16 @@ namespace WanikaniApi
                 query += "unlocked=" + unlocked + And;
 
             if (updatedAfter != null)
-                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
+                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             var json = CustomGet("assignments" + query.ToLower());
-            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json).Data;
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json);
         }
 
         /// <summary>
         /// Returns a collection of all level progressions, ordered by ascending CreatedAt, 500 at a time.
         /// </summary>
-        /// <param name="ids">Only LevelProgressions where Data.Id matches one of the array values are returned.</param>
-        /// <param name="updatedAfter">Only LevelProgressions updated after this time are returned.</param>
-        /// <returns></returns>
-        public static List<LevelProgression> GetLevelProgressions([Optional] int[] ids, [Optional] DateTime? updatedAfter)
+        public static CollectionResponse<LevelProgression> GetLevelProgressions([Optional] int[] ids, [Optional] DateTime? updatedAfter)
         {
             var idsP = "";
             var updatedAfterP = "";
@@ -149,13 +149,15 @@ namespace WanikaniApi
                 idsP = "ids=" + string.Join(",", ids);
             
             if (updatedAfter != null)
-                updatedAfterP = "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
+                updatedAfterP = "updatedAfter=" + updatedAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             var json = CustomGet($"level_progressions?{updatedAfterP}&{idsP}");
-            return JsonConvert.DeserializeObject<CollectionResponse<LevelProgression>>(json).Data;
+            return JsonConvert.DeserializeObject<CollectionResponse<LevelProgression>>(json);
         }
-
-        public static List<Reset> GetResets([Optional] int[] ids, [Optional] DateTime? updatedAfter)
+        /// <summary>
+        /// Returns a collection of all resets, ordered by ascending CreatedAt, 500 at a time.
+        /// </summary>
+        public static CollectionResponse<Reset> GetResets([Optional] int[] ids, [Optional] DateTime? updatedAfter)
         {
             var query = "?";
 
@@ -163,16 +165,16 @@ namespace WanikaniApi
                 query += "ids=" + string.Join(",", ids) + And;
 
             if (updatedAfter != null)
-                query += "updated_after=" + updatedAfter.Value.ToUniversalTime();
+                query += "updated_after=" + updatedAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             var json = CustomGet("resets" + query.ToLower());
-            return JsonConvert.DeserializeObject<CollectionResponse<Reset>>(json).Data;
+            return JsonConvert.DeserializeObject<CollectionResponse<Reset>>(json);
         }
 
         /// <summary>
         /// Returns a collection of all study material, ordered by ascending CreatedAt, 500 at a time.
         /// </summary>        
-        public static List<StudyMaterial> GetStudyMaterials([Optional] bool? hidden, [Optional] int[] ids, [Optional] int[] subjectIds, 
+        public static CollectionResponse<StudyMaterial> GetStudyMaterials([Optional] bool? hidden, [Optional] int[] ids, [Optional] int[] subjectIds, 
             [Optional] string[] subjectTypes, [Optional] DateTime? updatedAfter)
         {
             var query = "?";
@@ -190,16 +192,16 @@ namespace WanikaniApi
                 query += "subject_types=" + string.Join(",", subjectTypes) + And;
 
             if (updatedAfter != null)
-                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
+                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             var json = CustomGet("study_materials" + query.ToLower());
-            return JsonConvert.DeserializeObject<CollectionResponse<StudyMaterial>>(json).Data;
+            return JsonConvert.DeserializeObject<CollectionResponse<StudyMaterial>>(json);
         }
 
         /// <summary>
         /// Returns a collection of all subjects, ordered by ascending CreatedAt, 1000 at a time.
         /// </summary>        
-        public static List<Subject> GetSubjects([Optional] int[] ids, [Optional] string[] types, [Optional] string[] slugs, [Optional] int[] levels,
+        public static CollectionResponse<Subject> GetSubjects([Optional] int[] ids, [Optional] string[] types, [Optional] string[] slugs, [Optional] int[] levels,
             [Optional] bool? hidden, [Optional] DateTime? updatedAfter)
         {
             var query = "?";
@@ -220,14 +222,14 @@ namespace WanikaniApi
                 query += "levels=" + string.Join(",", levels) + And;
 
             if (updatedAfter != null)
-                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime();
+                query += "updatedAfter=" + updatedAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             var json = CustomGet("subjects" + query.ToLower());
-            return JsonConvert.DeserializeObject<CollectionResponse<Subject>>(json).Data;
+            return JsonConvert.DeserializeObject<CollectionResponse<Subject>>(json);
         }
 
         /// <summary>
-        /// Creates a review for a specific SubjectId. Using the related AssignmentId is also a valid alternative to using subjectId.
+        /// Creates a review for a specific SubjectId. Using the related AssignmentId is also a valid alternative to using SubjectId.
         /// </summary>
         public static void PostReview(Review review)
         {
@@ -239,7 +241,7 @@ namespace WanikaniApi
         }
 
         /// <summary>
-        /// Creates a study material for a specific subject_id. The owner of the api key can only create one study_material per subject_id.
+        /// Creates a study material for a specific SubjectId. The owner of the api key can only create one StudyMaterial per SubjectId.
         /// </summary>
         public static void CreateStudyMaterial(StudyMaterial studyMaterial)
         {
@@ -248,14 +250,14 @@ namespace WanikaniApi
         }
 
         /// <summary>
-        /// Retrieves a specific subject by its id.
+        /// Retrieves a specific subject by its Id.
         /// </summary>        
         public static Subject GetSubject(int id)
         {
             var json = CustomGet($"subjects/{id}");
-            var test = JsonConvert.DeserializeObject<ResourceResponse<object>>(json);
+            var response = JsonConvert.DeserializeObject<ResourceResponse<object>>(json);
 
-            switch (test.Object)
+            switch (response.Object)
             {
                 case "radical":
                     return JsonConvert.DeserializeObject<ResourceResponse<Radical>>(json).Data;
@@ -264,12 +266,12 @@ namespace WanikaniApi
                 case "vocabulary":
                     return JsonConvert.DeserializeObject<ResourceResponse<Vocabulary>>(json).Data;
                 default:
-                    throw new Exception($"API isn't familiar with {test.Object} item type.");
+                    throw new Exception($"API isn't familiar with {response.Object} item type.");
             }
         }
 
         /// <summary>
-        /// Retrieves a specific assignment by its id.
+        /// Retrieves a specific assignment by its Id.
         /// </summary>        
         public static Assignment GetAssignment(int id)
         {
@@ -278,7 +280,7 @@ namespace WanikaniApi
         }
 
         /// <summary>
-        /// Retrieves a specific study material by its id (not subject_id or assignment_id).
+        /// Retrieves a specific study material by its Id (not SubjectId or AssignmentId).
         /// </summary>
         public static StudyMaterial GetStudyMaterial(int id)
         {
@@ -292,7 +294,7 @@ namespace WanikaniApi
         public static Summary GetSummary()
         {
             var json = CustomGet("summary");
-            return JsonConvert.DeserializeObject<Summary>(json).Data;
+            return JsonConvert.DeserializeObject<ResourceResponse<Summary>>(json).Data;
         }
         
         /// <summary>
@@ -303,8 +305,11 @@ namespace WanikaniApi
             var json = CustomGet("user");
             return JsonConvert.DeserializeObject<ResourceResponse<User>>(json).Data;
         }
-
-        public static List<VoiceActor> GetVoiceActors([Optional] int[] ids, [Optional] DateTime? updatedAfter)
+        
+        /// <summary>
+        /// Returns a collection of all VoiceActors, ordered by ascending CreatedAt, 500 at a time.
+        /// </summary>
+        public static CollectionResponse<VoiceActor> GetVoiceActors([Optional] int[] ids, [Optional] DateTime? updatedAfter)
         {
             var query = "?";
             
@@ -312,14 +317,16 @@ namespace WanikaniApi
                 query +=  "ids=" + string.Join(",", ids);
 
             if (updatedAfter != null)
-                query += "updated_after=" + updatedAfter.Value.ToUniversalTime();
+                query += "updated_after=" + updatedAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             var json = CustomGet($"voice_actors{query}");
-            return JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<VoiceActor>>>(json).Data
-                .Select(x => x.Data).ToList();
+            return JsonConvert.DeserializeObject<CollectionResponse<VoiceActor>>(json);
         }
-
-        public static List<Review> GetReviews([Optional] int[] assignmentIds, [Optional] int[] ids, [Optional] int[] subjectIds, [Optional] DateTime? updatedAfter)
+        
+        /// <summary>
+        /// Returns a collection of all reviews, ordered by ascending CreatedAt, 1000 at a time.
+        /// </summary>
+        public static CollectionResponse<Review> GetReviews([Optional] int[] assignmentIds, [Optional] int[] ids, [Optional] int[] subjectIds, [Optional] DateTime? updatedAfter)
         {
             var query = "?";
 
@@ -333,41 +340,37 @@ namespace WanikaniApi
                 query += "subject_ids=" + string.Join(",", subjectIds);
 
             if (updatedAfter != null)
-                query += "updated_after=" + updatedAfter.Value.ToUniversalTime();
+                query += "updated_after=" + updatedAfter.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             var json = CustomGet($"reviews{query}");
-            return JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Review>>>(json).Data
-                .Select(x => x.Data).ToList();
+            return JsonConvert.DeserializeObject<CollectionResponse<Review>>(json);
         }
 
         /// <summary>
-        /// Returns assignments which are immediately available for review.
+        /// Returns assignments immediately available for review.
         /// </summary>
-        public static List<Assignment> GetAvailableReviews()
+        public static CollectionResponse<Assignment> GetAvailableReviews()
         {
             var json = CustomGet("assignments?immediately_available_for_review");
-            return JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignment>>>(json).Data
-                .Select(x => x.Data).ToList();
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json);
         }
 
         /// <summary>
-        /// Returns assignments which are immediately available for lessons.
+        /// Returns assignments immediately available for lessons.
         /// </summary>
-        public static List<Assignment> GetAvailableLessons()
+        public static CollectionResponse<Assignment> GetAvailableLessons()
         {
             var json = CustomGet("assignments?immediately_available_for_lessons");
-            return JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignment>>>(json).Data
-                .Select(x => x.Data).ToList();
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json);
         }
 
         /// <summary>
-        /// Returns assignments which are in the review state.
+        /// Returns assignments in review state.
         /// </summary>
-        public static List<Assignment> GetInReview()
+        public static CollectionResponse<Assignment> GetInReview()
         {
             var json = CustomGet("assignments?in_review");
-            return JsonConvert.DeserializeObject<CollectionResponse<ResourceResponse<Assignment>>>(json)
-                .Data.Select(x => x.Data).ToList();
+            return JsonConvert.DeserializeObject<CollectionResponse<Assignment>>(json);
         }
 
         /// <summary>

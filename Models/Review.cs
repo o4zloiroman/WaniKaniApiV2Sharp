@@ -18,13 +18,13 @@ namespace WanikaniApi.Models
         public int? StartingSrsStage { get; }
 
         [JsonProperty("starting_srs_stage_name")]
-        public string StartingSrsStageName { get; }
+        public string StartingSrsStageName { get; private set; }
 
         [JsonProperty("ending_srs_stage")]
         public int EndingSrsStage { get; set; }
 
         [JsonProperty("ending_srs_stage_name")]
-        public string EndingSrsStageName { get; set; }
+        public string EndingSrsStageName { get; private set; }
 
         [JsonProperty("incorrect_meaning_answers")]
         public int IncorrectMeaningAnswers { get; set; }
