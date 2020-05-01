@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\WaniKaniApi\WaniKaniApi.csproj" />
       <ProjectReference Include="..\WaniKaniApi\WaniKaniApi\WaniKaniApi.csproj" />
     </ItemGroup>
 
