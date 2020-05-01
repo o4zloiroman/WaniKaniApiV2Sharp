@@ -263,3 +263,7 @@ paket-files/
 __pycache__/
 *.pyc
 /WPFClient
+
+
+# Custom
+**/appsettings.json
